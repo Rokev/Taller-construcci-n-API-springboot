@@ -7,9 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import persistanceLayer.entity.ViajeEntity;
-import persistanceLayer.mapper.mapper;
-import persistanceLayer.repository.ViajeRepository;
+import persistanceLayer.dao.ViajeDAO;
 
 import java.util.List;
 
@@ -19,59 +17,43 @@ import java.util.List;
 @Slf4j
 public class ViajeServiceImpl implements ViajeService {
 
-    private final ViajeRepository viajeRepository;
-    private final mapper mapper;
+    private final ViajeDAO viajeDAO;
 
     @Override
     public ViajeDTO crearViaje(ViajeDTO viajeDTO) {
         log.info("Creando viaje con destino: {}", viajeDTO.getDestino());
 
-        ViajeEntity entity = mapper.toEntity(viajeDTO);
-        entity.setIdViaje(null);
-        ViajeEntity guardado = viajeRepository.save(entity);
-
+        ViajeDTO guardado = viajeDAO.save(viajeDTO);
         log.info("Viaje creado con ID: {}", guardado.getIdViaje());
-        return mapper.toDto(guardado);
+        return guardado;
     }
 
     @Override
     @Transactional(readOnly = true)
     public ViajeDTO obtenerViajePorId(Long id) {
-        return mapper.toDto(buscarViajeOrThrow(id));
+        return viajeDAO.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Viaje no encontrado con ID: " + id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ViajeDTO> obtenerTodosLosViajes() {
-        return viajeRepository.findAll().stream()
-                .map(mapper::toDto)
-                .toList();
+        return viajeDAO.findAll();
     }
 
     @Override
     public ViajeDTO actualizarViaje(Long id, ViajeDTO viajeDTO) {
-        ViajeEntity existente = buscarViajeOrThrow(id);
-
-        existente.setDestino(viajeDTO.getDestino());
-        existente.setDuracionDias(viajeDTO.getDuracionDias());
-        existente.setPrecio(viajeDTO.getPrecio());
-        existente.setFechasDisponibles(viajeDTO.getFechasDisponibles());
-        existente.setDescripcion(viajeDTO.getDescripcion());
-
-        ViajeEntity actualizado = viajeRepository.save(existente);
+        ViajeDTO actualizado = viajeDAO.update(id, viajeDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Viaje no encontrado con ID: " + id));
         log.info("Viaje actualizado ID: {}", id);
-        return mapper.toDto(actualizado);
+        return actualizado;
     }
 
     @Override
     public void eliminarViaje(Long id) {
-        ViajeEntity existente = buscarViajeOrThrow(id);
-        viajeRepository.delete(existente);
+        if (!viajeDAO.deleteById(id)) {
+            throw new ResourceNotFoundException("Viaje no encontrado con ID: " + id);
+        }
         log.info("Viaje eliminado ID: {}", id);
-    }
-
-    private ViajeEntity buscarViajeOrThrow(Long id) {
-        return viajeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Viaje no encontrado con ID: " + id));
     }
 }

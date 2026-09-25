@@ -8,13 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import persistanceLayer.entity.ClienteEntity;
-import persistanceLayer.entity.ReservaEntity;
-import persistanceLayer.entity.ViajeEntity;
-import persistanceLayer.mapper.mapper;
-import persistanceLayer.repository.ClienteRepositoy;
-import persistanceLayer.repository.ReservaRepository;
-import persistanceLayer.repository.ViajeRepository;
+import persistanceLayer.dao.ClienteDAO;
+import persistanceLayer.dao.ReservaDAO;
+import persistanceLayer.dao.ViajeDAO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,87 +24,74 @@ public class ReservaServiceImpl implements ReservaService {
 
     private static final Set<String> ESTADOS_VALIDOS = Set.of("ACTIVA", "PENDIENTE", "CANCELADA");
 
-    private final ReservaRepository reservaRepository;
-    private final ViajeRepository viajeRepository;
-    private final ClienteRepositoy clienteRepositoy;
-    private final mapper mapper;
+    private final ReservaDAO reservaDAO;
+    private final ViajeDAO viajeDAO;
+    private final ClienteDAO clienteDAO;
 
     @Override
     public ReservaDTO crearReserva(ReservaDTO reservaDTO) {
         log.info("Creando reserva para viaje ID: {} y cliente ID: {}",
                 reservaDTO.getIdViaje(), reservaDTO.getIdCliente());
 
-        ViajeEntity viaje = buscarViajeOrThrow(reservaDTO.getIdViaje());
-        ClienteEntity cliente = buscarClienteOrThrow(reservaDTO.getIdCliente());
+        validarViajeExiste(reservaDTO.getIdViaje());
+        validarClienteExiste(reservaDTO.getIdCliente());
         validarFecha(reservaDTO.getFecha());
         validarEstado(reservaDTO.getEstado());
 
-        ReservaEntity entity = mapper.toEntity(reservaDTO);
-        entity.setIdReserva(null);
-        entity.setViaje(viaje);
-        entity.setCliente(cliente);
-        entity.setEstado(reservaDTO.getEstado().toUpperCase());
-
-        ReservaEntity guardada = reservaRepository.save(entity);
+        ReservaDTO guardada = reservaDAO.save(reservaDTO);
         log.info("Reserva creada con ID: {}", guardada.getIdReserva());
-        return mapper.toDto(guardada);
+        return guardada;
     }
 
     @Override
     @Transactional(readOnly = true)
     public ReservaDTO obtenerReservaPorId(Long id) {
-        return mapper.toDto(buscarReservaOrThrow(id));
+        return reservaDAO.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada con ID: " + id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ReservaDTO> obtenerTodasLasReservas() {
-        return reservaRepository.findAll().stream()
-                .map(mapper::toDto)
-                .toList();
+        return reservaDAO.findAll();
     }
 
     @Override
     public ReservaDTO actualizarReserva(Long id, ReservaDTO reservaDTO) {
-        ReservaEntity existente = buscarReservaOrThrow(id);
-        ViajeEntity viaje = buscarViajeOrThrow(reservaDTO.getIdViaje());
-        ClienteEntity cliente = buscarClienteOrThrow(reservaDTO.getIdCliente());
+        if (!reservaDAO.existsById(id)) {
+            throw new ResourceNotFoundException("Reserva no encontrada con ID: " + id);
+        }
+        validarViajeExiste(reservaDTO.getIdViaje());
+        validarClienteExiste(reservaDTO.getIdCliente());
         validarFecha(reservaDTO.getFecha());
         validarEstado(reservaDTO.getEstado());
 
-        existente.setFecha(reservaDTO.getFecha());
-        existente.setEstado(reservaDTO.getEstado().toUpperCase());
-        existente.setNumeroPersonas(reservaDTO.getNumeroPersonas());
-        existente.setViaje(viaje);
-        existente.setCliente(cliente);
-
-        ReservaEntity actualizada = reservaRepository.save(existente);
+        ReservaDTO actualizada = reservaDAO.update(id, reservaDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada con ID: " + id));
         log.info("Reserva actualizada ID: {}", id);
-        return mapper.toDto(actualizada);
+        return actualizada;
     }
 
     @Override
     public void eliminarReserva(Long id) {
-        ReservaEntity existente = buscarReservaOrThrow(id);
-        reservaRepository.delete(existente);
+        if (!reservaDAO.deleteById(id)) {
+            throw new ResourceNotFoundException("Reserva no encontrada con ID: " + id);
+        }
         log.info("Reserva eliminada ID: {}", id);
     }
 
-    private ReservaEntity buscarReservaOrThrow(Long id) {
-        return reservaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada con ID: " + id));
+    private void validarViajeExiste(Long idViaje) {
+        if (!viajeDAO.existsById(idViaje)) {
+            throw new BusinessValidationException(
+                    "No se puede reservar: el viaje con ID " + idViaje + " no existe");
+        }
     }
 
-    private ViajeEntity buscarViajeOrThrow(Long idViaje) {
-        return viajeRepository.findById(idViaje)
-                .orElseThrow(() -> new BusinessValidationException(
-                        "No se puede reservar: el viaje con ID " + idViaje + " no existe"));
-    }
-
-    private ClienteEntity buscarClienteOrThrow(Long idCliente) {
-        return clienteRepositoy.findById(idCliente)
-                .orElseThrow(() -> new BusinessValidationException(
-                        "No se puede reservar: el cliente con ID " + idCliente + " no existe"));
+    private void validarClienteExiste(Long idCliente) {
+        if (!clienteDAO.existsById(idCliente)) {
+            throw new BusinessValidationException(
+                    "No se puede reservar: el cliente con ID " + idCliente + " no existe");
+        }
     }
 
     private void validarFecha(LocalDateTime fecha) {

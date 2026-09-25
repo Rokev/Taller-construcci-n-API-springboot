@@ -8,9 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import persistanceLayer.entity.ClienteEntity;
-import persistanceLayer.mapper.mapper;
-import persistanceLayer.repository.ClienteRepositoy;
+import persistanceLayer.dao.ClienteDAO;
 
 import java.util.List;
 
@@ -20,71 +18,60 @@ import java.util.List;
 @Slf4j
 public class ClienteServiceImpl implements ClienteService {
 
-    private final ClienteRepositoy clienteRepositoy;
-    private final mapper mapper;
+    private final ClienteDAO clienteDAO;
 
     @Override
     public ClienteDTO crearCliente(ClienteDTO clienteDTO) {
         log.info("Creando cliente con email: {}", clienteDTO.getEmail());
 
-        clienteRepositoy.findByEmailIgnoreCase(clienteDTO.getEmail())
+        clienteDAO.findByEmail(clienteDTO.getEmail())
                 .ifPresent(existente -> {
                     throw new BusinessValidationException(
                             "Ya existe un cliente registrado con el email: " + clienteDTO.getEmail());
                 });
 
-        ClienteEntity entity = mapper.toEntity(clienteDTO);
-        entity.setIdCliente(null);
-        ClienteEntity guardado = clienteRepositoy.save(entity);
-
+        ClienteDTO guardado = clienteDAO.save(clienteDTO);
         log.info("Cliente creado con ID: {}", guardado.getIdCliente());
-        return mapper.toDto(guardado);
+        return guardado;
     }
 
     @Override
     @Transactional(readOnly = true)
     public ClienteDTO obtenerClientePorId(Long id) {
-        ClienteEntity entity = buscarClienteOrThrow(id);
-        return mapper.toDto(entity);
+        return clienteDAO.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado con ID: " + id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ClienteDTO> obtenerTodosLosClientes() {
-        return clienteRepositoy.findAll().stream()
-                .map(mapper::toDto)
-                .toList();
+        return clienteDAO.findAll();
     }
 
     @Override
     public ClienteDTO actualizarCliente(Long id, ClienteDTO clienteDTO) {
-        ClienteEntity existente = buscarClienteOrThrow(id);
+        if (!clienteDAO.existsById(id)) {
+            throw new ResourceNotFoundException("Cliente no encontrado con ID: " + id);
+        }
 
-        clienteRepositoy.findByEmailIgnoreCase(clienteDTO.getEmail())
+        clienteDAO.findByEmail(clienteDTO.getEmail())
                 .filter(otro -> !otro.getIdCliente().equals(id))
                 .ifPresent(otro -> {
                     throw new BusinessValidationException(
                             "Ya existe otro cliente registrado con el email: " + clienteDTO.getEmail());
                 });
 
-        existente.setNombre(clienteDTO.getNombre());
-        existente.setEmail(clienteDTO.getEmail());
-        existente.setDireccion(clienteDTO.getDireccion());
-
-        ClienteEntity actualizado = clienteRepositoy.save(existente);
+        ClienteDTO actualizado = clienteDAO.update(id, clienteDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado con ID: " + id));
         log.info("Cliente actualizado ID: {}", id);
-        return mapper.toDto(actualizado);
+        return actualizado;
     }
 
     @Override
     public void eliminarCliente(Long id) {
-        ClienteEntity existente = buscarClienteOrThrow(id);
-        clienteRepositoy.delete(existente);
+        if (!clienteDAO.deleteById(id)) {
+            throw new ResourceNotFoundException("Cliente no encontrado con ID: " + id);
+        }
         log.info("Cliente eliminado ID: {}", id);
-    }
-
-    private ClienteEntity buscarClienteOrThrow(Long id) {
-        return clienteRepositoy.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado con ID: " + id));
     }
 }

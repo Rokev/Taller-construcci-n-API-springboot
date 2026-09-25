@@ -8,11 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import persistanceLayer.entity.Transporte;
-import persistanceLayer.entity.ViajeEntity;
-import persistanceLayer.mapper.mapper;
-import persistanceLayer.repository.TransporteRepository;
-import persistanceLayer.repository.ViajeRepository;
+import persistanceLayer.dao.TransporteDAO;
+import persistanceLayer.dao.ViajeDAO;
 
 import java.util.List;
 
@@ -22,70 +19,58 @@ import java.util.List;
 @Slf4j
 public class TransporteServiceImpl implements TransporteService {
 
-    private final TransporteRepository transporteRepository;
-    private final ViajeRepository viajeRepository;
-    private final mapper mapper;
+    private final TransporteDAO transporteDAO;
+    private final ViajeDAO viajeDAO;
 
     @Override
     public TransporteDTO crearTransporte(TransporteDTO transporteDTO) {
         log.info("Creando transporte para el viaje ID: {}", transporteDTO.getIdViaje());
 
-        ViajeEntity viaje = buscarViajeOrThrow(transporteDTO.getIdViaje());
+        validarViajeExiste(transporteDTO.getIdViaje());
 
-        Transporte entity = mapper.toEntity(transporteDTO);
-        entity.setIdTransporte(null);
-        entity.setViaje(viaje);
-
-        Transporte guardado = transporteRepository.save(entity);
+        TransporteDTO guardado = transporteDAO.save(transporteDTO);
         log.info("Transporte creado con ID: {}", guardado.getIdTransporte());
-        return mapper.toDto(guardado);
+        return guardado;
     }
 
     @Override
     @Transactional(readOnly = true)
     public TransporteDTO obtenerTransportePorId(Long id) {
-        return mapper.toDto(buscarTransporteOrThrow(id));
+        return transporteDAO.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Transporte no encontrado con ID: " + id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<TransporteDTO> obtenerTodosLosTransportes() {
-        return transporteRepository.findAll().stream()
-                .map(mapper::toDto)
-                .toList();
+        return transporteDAO.findAll();
     }
 
     @Override
     public TransporteDTO actualizarTransporte(Long id, TransporteDTO transporteDTO) {
-        Transporte existente = buscarTransporteOrThrow(id);
-        ViajeEntity viaje = buscarViajeOrThrow(transporteDTO.getIdViaje());
+        if (!transporteDAO.existsById(id)) {
+            throw new ResourceNotFoundException("Transporte no encontrado con ID: " + id);
+        }
+        validarViajeExiste(transporteDTO.getIdViaje());
 
-        existente.setCompania(transporteDTO.getCompania());
-        existente.setHorario(transporteDTO.getHorario());
-        existente.setDuracion(transporteDTO.getDuracion());
-        existente.setClaseServicio(transporteDTO.getClaseServicio());
-        existente.setViaje(viaje);
-
-        Transporte actualizado = transporteRepository.save(existente);
+        TransporteDTO actualizado = transporteDAO.update(id, transporteDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Transporte no encontrado con ID: " + id));
         log.info("Transporte actualizado ID: {}", id);
-        return mapper.toDto(actualizado);
+        return actualizado;
     }
 
     @Override
     public void eliminarTransporte(Long id) {
-        Transporte existente = buscarTransporteOrThrow(id);
-        transporteRepository.delete(existente);
+        if (!transporteDAO.deleteById(id)) {
+            throw new ResourceNotFoundException("Transporte no encontrado con ID: " + id);
+        }
         log.info("Transporte eliminado ID: {}", id);
     }
 
-    private Transporte buscarTransporteOrThrow(Long id) {
-        return transporteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Transporte no encontrado con ID: " + id));
-    }
-
-    private ViajeEntity buscarViajeOrThrow(Long idViaje) {
-        return viajeRepository.findById(idViaje)
-                .orElseThrow(() -> new BusinessValidationException(
-                        "No se puede asignar el transporte: el viaje con ID " + idViaje + " no existe"));
+    private void validarViajeExiste(Long idViaje) {
+        if (!viajeDAO.existsById(idViaje)) {
+            throw new BusinessValidationException(
+                    "No se puede asignar el transporte: el viaje con ID " + idViaje + " no existe");
+        }
     }
 }
