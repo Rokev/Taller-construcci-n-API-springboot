@@ -1,27 +1,32 @@
+package persistanceLayer.entity;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.util.DateTime;
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "viaje")
 @Data
 @AllArgsConstructor
 public class ViajeEntity{
-    @id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @column(name="id_viaje")
+    @Column(name="id_viaje")
     private Long idViaje;
     private String destino;
-    @column(name="duracion_dias")
+    @Column(name="duracion_dias")
     private int duracionDias;
     private double precio;
-    @column(name="fechas_disponibles")
-    private DateTime fechasDisponibles;
+    @Column(name="fechas_disponibles")
+    private LocalDateTime fechasDisponibles;
     private String descripcion;
 
-    @OneToMany(mappedBy = "ReservaEntity", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "ViajeEntity", fetch = FetchType.LAZY)
     private List<ReservaEntity> reservas;
 
-    @OneToMany(mappedBy = "TransporteEntity", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "ViajeEntity", fetch = FetchType.LAZY)
     private List<TransporteEntity> transportes;
-}
+}        
