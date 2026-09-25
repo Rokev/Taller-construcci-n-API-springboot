@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-@Schema(descripcion = "informacion del cliente")
+@Schema(description = "informacion del cliente")
 public class ClienteDTO {
     @Schema(description = "id unico de cliente", example = "154", accessMode = Schema.AccessMode.READ_ONLY)
     private Long idCliente;

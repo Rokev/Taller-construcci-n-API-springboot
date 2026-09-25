@@ -1,12 +1,12 @@
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.util.LocalDateTime
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @Schema(descripcion = "informacion del transporte")
-public class TransporteEntity {
+public class TransporteDTO {
     @Schema(description = "ID único del transporte", example = "123", accessMode = Schema.AccessMode.READ_ONLY)
     private Long idTransporte;
     @Schema(description = "Nombre de la compañia del transporte", example = "Coochoferes", required = true)

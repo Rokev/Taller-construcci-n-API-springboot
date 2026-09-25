@@ -1,11 +1,11 @@
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.util.LocalDateTime
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-@Schema(descripcion = "informacion de la reserva")
+@Schema(description = "informacion de la reserva")
 public class ReservaDTO{
     @Schema(description = "ID único de la reserva", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private Long idReserva;
