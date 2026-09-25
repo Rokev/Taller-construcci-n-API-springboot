@@ -1,5 +1,14 @@
+package persistanceLayer.mapper;
+import BussisnesCatLayer.dto.ClienteDTO;
+import BussisnesCatLayer.dto.ReservaDTO;
+import BussisnesCatLayer.dto.TransporteDTO;
+import BussisnesCatLayer.dto.ViajeDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import persistanceLayer.entity.ClienteEntity;
+import persistanceLayer.entity.ReservaEntity;
+import persistanceLayer.entity.Transporte;
+import persistanceLayer.entity.ViajeEntity;
 
 @Mapper(componentModel = "spring")
 public interface mapper {
