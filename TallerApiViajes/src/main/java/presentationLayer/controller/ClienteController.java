@@ -47,7 +47,7 @@ public class ClienteController {
     public ResponseEntity<ClienteDTO> crearCliente(
             @Parameter(description = "Datos del cliente a crear", required = true)
             @Valid @RequestBody ClienteDTO clienteDTO) {
-        log.info("POST /api/v1/clientes - email: {}", clienteDTO.getEmail());
+        //log.info("POST /api/v1/clientes - email: {}", clienteDTO.getEmail());
         ClienteDTO creado = clienteService.crearCliente(clienteDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
@@ -63,7 +63,7 @@ public class ClienteController {
     public ResponseEntity<ClienteDTO> obtenerPorId(
             @Parameter(description = "ID del cliente", required = true, example = "1")
             @PathVariable Long id) {
-        log.debug("GET /api/v1/clientes/{}", id);
+        //log.debug("GET /api/v1/clientes/{}", id);
         return ResponseEntity.ok(clienteService.obtenerClientePorId(id));
     }
 
@@ -72,7 +72,7 @@ public class ClienteController {
     @ApiResponse(responseCode = "200", description = "Lista de clientes obtenida exitosamente",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDTO.class)))
     public ResponseEntity<List<ClienteDTO>> obtenerTodos() {
-        log.debug("GET /api/v1/clientes");
+        //log.debug("GET /api/v1/clientes");
         return ResponseEntity.ok(clienteService.obtenerTodosLosClientes());
     }
 
@@ -90,7 +90,7 @@ public class ClienteController {
             @PathVariable Long id,
             @Parameter(description = "Nuevos datos del cliente", required = true)
             @Valid @RequestBody ClienteDTO clienteDTO) {
-        log.info("PUT /api/v1/clientes/{}", id);
+        //log.info("PUT /api/v1/clientes/{}", id);
         return ResponseEntity.ok(clienteService.actualizarCliente(id, clienteDTO));
     }
 
@@ -103,7 +103,7 @@ public class ClienteController {
     public ResponseEntity<Void> eliminar(
             @Parameter(description = "ID del cliente a eliminar", required = true, example = "1")
             @PathVariable Long id) {
-        log.info("DELETE /api/v1/clientes/{}", id);
+        //log.info("DELETE /api/v1/clientes/{}", id);
         clienteService.eliminarCliente(id);
         return ResponseEntity.noContent().build();
     }

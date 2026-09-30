@@ -19,19 +19,19 @@ public class TransporteDAO {
     private final mapper mapper;
 
     public TransporteDTO save(TransporteDTO dto) {
-        TransporteEntity entity = mapper.transporteToEntity(dto);
+        TransporteEntity entity = mapper.toEntity(dto);
         entity.setIdTransporte(null);
         entity.setViaje(referenciaViaje(dto.getIdViaje()));
         TransporteEntity guardado = transporteRepository.save(entity);
-        return mapper.transporteToDto(guardado);
+        return mapper.toDto(guardado);
     }
 
     public Optional<TransporteDTO> findById(Long id) {
-        return transporteRepository.findById(id).map(mapper::transporteToDto);
+        return transporteRepository.findById(id).map(mapper::toDto);
     }
 
     public List<TransporteDTO> findAll() {
-        return transporteRepository.findAll().stream().map(mapper::transporteToDto).toList();
+        return transporteRepository.findAll().stream().map(mapper::toDto).toList();
     }
 
     public Optional<TransporteDTO> update(Long id, TransporteDTO dto) {
@@ -41,7 +41,7 @@ public class TransporteDAO {
             existente.setDuracion(dto.getDuracion());
             existente.setClaseServicio(dto.getClaseServicio());
             existente.setViaje(referenciaViaje(dto.getIdViaje()));
-            return mapper.transporteToDto(transporteRepository.save(existente));
+            return mapper.toDto(transporteRepository.save(existente));
         });
     }
 

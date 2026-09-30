@@ -26,6 +26,9 @@ public class ClienteDAO {
     public Optional<ClienteDTO> findById(Long id){
         return clienteRepositoy.findById(id).map(mapper::clienteToDto);
     }
+//    public Optional<ClienteDTO> findById(Long id) {
+//        return clienteRepositoy.findById(id).map(mapper::clienteToDto);
+//    }
 
     public List<ClienteDTO> findAll() {
         return clienteRepositoy.findAll().stream().map(mapper::clienteToDto).toList();
