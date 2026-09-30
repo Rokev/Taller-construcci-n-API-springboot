@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import presentationLayer.advice.ApiError;
 
 import java.util.List;
 
@@ -43,10 +42,8 @@ public class ReservaController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Reserva creada exitosamente",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReservaDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Datos invalidos, viaje/cliente inexistente, fecha o estado invalido",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class))),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
+            @ApiResponse(responseCode = "400", description = "Datos invalidos, viaje/cliente inexistente, fecha o estado invalido",),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor",)
     })
     public ResponseEntity<ReservaDTO> crearReserva(
             @Parameter(description = "Datos de la reserva a crear", required = true)

@@ -20,22 +20,22 @@ public class ReservaDAO {
     private final mapper mapper;
 
     public ReservaDTO save(ReservaDTO dto) {
-        ReservaEntity entity = mapper.toEntity(dto);
+        ReservaEntity entity = mapper.reservaToEntity(dto);
         entity.setIdReserva(null);
         entity.setViaje(referenciaViaje(dto.getIdViaje()));
         entity.setCliente(referenciaCliente(dto.getIdCliente()));
         entity.setEstado(dto.getEstado().toUpperCase());
 
         ReservaEntity guardada = reservaRepository.save(entity);
-        return mapper.toDto(guardada);
+        return mapper.reservaToDto(guardada);
     }
 
     public Optional<ReservaDTO> findById(Long id) {
-        return reservaRepository.findById(id).map(mapper::toDto);
+        return reservaRepository.findById(id).map(mapper::reservaToDto);
     }
 
     public List<ReservaDTO> findAll() {
-        return reservaRepository.findAll().stream().map(mapper::toDto).toList();
+        return reservaRepository.findAll().stream().map(mapper::reservaToDto).toList();
     }
 
     public Optional<ReservaDTO> update(Long id, ReservaDTO dto) {
@@ -45,7 +45,7 @@ public class ReservaDAO {
             existente.setNumeroPersonas(dto.getNumeroPersonas());
             existente.setViaje(referenciaViaje(dto.getIdViaje()));
             existente.setCliente(referenciaCliente(dto.getIdCliente()));
-            return mapper.toDto(reservaRepository.save(existente));
+            return mapper.reservaToDto(reservaRepository.save(existente));
         });
     }
 

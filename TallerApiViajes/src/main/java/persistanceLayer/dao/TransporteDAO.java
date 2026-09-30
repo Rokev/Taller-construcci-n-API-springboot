@@ -3,7 +3,7 @@ package persistanceLayer.dao;
 import BussisnesCatLayer.dto.TransporteDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import persistanceLayer.entity.Transporte;
+import persistanceLayer.entity.TransporteEntity;
 import persistanceLayer.entity.ViajeEntity;
 import persistanceLayer.mapper.mapper;
 import persistanceLayer.repository.TransporteRepository;
@@ -19,10 +19,10 @@ public class TransporteDAO {
     private final mapper mapper;
 
     public TransporteDTO save(TransporteDTO dto) {
-        Transporte entity = mapper.toEntity(dto);
+        TransporteEntity entity = mapper.toEntity(dto);
         entity.setIdTransporte(null);
         entity.setViaje(referenciaViaje(dto.getIdViaje()));
-        Transporte guardado = transporteRepository.save(entity);
+        TransporteEntity guardado = transporteRepository.save(entity);
         return mapper.toDto(guardado);
     }
 

@@ -18,9 +18,9 @@ public class ClienteEntity{
     private Long idCliente;
 
     private String nombre;
-    
+
     private String email;
-    
+
     private String direccion;
 
     @OneToMany(mappedBy = "ClienteEntity", fetch = FetchType.LAZY)
