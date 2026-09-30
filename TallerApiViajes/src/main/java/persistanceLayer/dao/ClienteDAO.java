@@ -18,18 +18,17 @@ public class ClienteDAO {
     private final mapper mapper;
 
     public ClienteDTO save(ClienteDTO dto) {
-        ClienteEntity entity = mapper.toEntity(dto);
+        ClienteEntity entity = mapper.clienteToEntity(dto);
         entity.setIdCliente(null);
         ClienteEntity guardado = clienteRepositoy.save(entity);
-        return mapper.toDto(guardado);
+        return mapper.clienteToDto(guardado);
     }
-
-    public Optional<ClienteDTO> findById(Long id) {
-        return clienteRepositoy.findById(id).map(mapper::toDto);
+    public Optional<ClienteDTO> findById(Long id){
+        return clienteRepositoy.findById(id).map(mapper::clienteToDto);
     }
 
     public List<ClienteDTO> findAll() {
-        return clienteRepositoy.findAll().stream().map(mapper::toDto).toList();
+        return clienteRepositoy.findAll().stream().map(mapper::clienteToDto).toList();
     }
 
     public Optional<ClienteDTO> update(Long id, ClienteDTO dto) {
@@ -37,7 +36,7 @@ public class ClienteDAO {
             existente.setNombre(dto.getNombre());
             existente.setEmail(dto.getEmail());
             existente.setDireccion(dto.getDireccion());
-            return mapper.toDto(clienteRepositoy.save(existente));
+            return mapper.clienteToDto(clienteRepositoy.save(existente));
         });
     }
 
@@ -54,6 +53,6 @@ public class ClienteDAO {
     }
 
     public Optional<ClienteDTO> findByEmail(String email) {
-        return clienteRepositoy.findByEmailIgnoreCase(email).map(mapper::toDto);
+        return clienteRepositoy.findByEmailIgnoreCase(email).map(mapper::clienteToDto);
     }
 }

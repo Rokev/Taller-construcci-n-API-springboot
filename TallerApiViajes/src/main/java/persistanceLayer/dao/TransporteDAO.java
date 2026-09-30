@@ -3,7 +3,7 @@ package persistanceLayer.dao;
 import BussisnesCatLayer.dto.TransporteDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import persistanceLayer.entity.Transporte;
+import persistanceLayer.entity.TransporteEntity;
 import persistanceLayer.entity.ViajeEntity;
 import persistanceLayer.mapper.mapper;
 import persistanceLayer.repository.TransporteRepository;
@@ -19,19 +19,19 @@ public class TransporteDAO {
     private final mapper mapper;
 
     public TransporteDTO save(TransporteDTO dto) {
-        Transporte entity = mapper.toEntity(dto);
+        TransporteEntity entity = mapper.transporteToEntity(dto);
         entity.setIdTransporte(null);
         entity.setViaje(referenciaViaje(dto.getIdViaje()));
-        Transporte guardado = transporteRepository.save(entity);
-        return mapper.toDto(guardado);
+        TransporteEntity guardado = transporteRepository.save(entity);
+        return mapper.transporteToDto(guardado);
     }
 
     public Optional<TransporteDTO> findById(Long id) {
-        return transporteRepository.findById(id).map(mapper::toDto);
+        return transporteRepository.findById(id).map(mapper::transporteToDto);
     }
 
     public List<TransporteDTO> findAll() {
-        return transporteRepository.findAll().stream().map(mapper::toDto).toList();
+        return transporteRepository.findAll().stream().map(mapper::transporteToDto).toList();
     }
 
     public Optional<TransporteDTO> update(Long id, TransporteDTO dto) {
@@ -41,7 +41,7 @@ public class TransporteDAO {
             existente.setDuracion(dto.getDuracion());
             existente.setClaseServicio(dto.getClaseServicio());
             existente.setViaje(referenciaViaje(dto.getIdViaje()));
-            return mapper.toDto(transporteRepository.save(existente));
+            return mapper.transporteToDto(transporteRepository.save(existente));
         });
     }
 

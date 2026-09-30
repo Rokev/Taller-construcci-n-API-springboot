@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import presentationLayer.advice.ApiError;
 
 import java.util.List;
 
@@ -41,9 +40,9 @@ public class ClienteController {
             @ApiResponse(responseCode = "201", description = "Cliente creado exitosamente",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDTO.class))),
             @ApiResponse(responseCode = "400", description = "Datos invalidos, faltantes o email ya registrado",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class))),
+                    content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
+                    content = @Content(mediaType = "application/json"))
     })
     public ResponseEntity<ClienteDTO> crearCliente(
             @Parameter(description = "Datos del cliente a crear", required = true)
@@ -59,7 +58,7 @@ public class ClienteController {
             @ApiResponse(responseCode = "200", description = "Cliente encontrado",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDTO.class))),
             @ApiResponse(responseCode = "404", description = "Cliente no encontrado",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
+                    content = @Content(mediaType = "application/json"))
     })
     public ResponseEntity<ClienteDTO> obtenerPorId(
             @Parameter(description = "ID del cliente", required = true, example = "1")
@@ -83,9 +82,8 @@ public class ClienteController {
             @ApiResponse(responseCode = "200", description = "Cliente actualizado exitosamente",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDTO.class))),
             @ApiResponse(responseCode = "400", description = "Datos invalidos o email ya registrado por otro cliente",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class))),
-            @ApiResponse(responseCode = "404", description = "Cliente no encontrado",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Cliente no encontrado")
     })
     public ResponseEntity<ClienteDTO> actualizar(
             @Parameter(description = "ID del cliente a actualizar", required = true, example = "1")
@@ -100,8 +98,7 @@ public class ClienteController {
     @Operation(summary = "Eliminar cliente", description = "Elimina un cliente del sistema")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Cliente eliminado exitosamente"),
-            @ApiResponse(responseCode = "404", description = "Cliente no encontrado",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
+            @ApiResponse(responseCode = "404", description = "Cliente no encontrado")
     })
     public ResponseEntity<Void> eliminar(
             @Parameter(description = "ID del cliente a eliminar", required = true, example = "1")

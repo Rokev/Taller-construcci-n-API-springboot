@@ -9,11 +9,11 @@ public interface ReservaService {
 
     ReservaDTO crearReserva(ReservaDTO reservaDTO);
 
-    ReservaDTO obtenerReservaPorId(Long id);
+    ReservaDTO obtenerReservaPorId(Long id) throws Exception;
 
     List<ReservaDTO> obtenerTodasLasReservas();
 
-    ReservaDTO actualizarReserva(Long id, ReservaDTO reservaDTO);
+    ReservaDTO actualizarReserva(Long id, ReservaDTO reservaDTO) throws Exception;
 
     void eliminarReserva(Long id);
 }

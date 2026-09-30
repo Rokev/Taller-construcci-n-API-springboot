@@ -7,36 +7,36 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import persistanceLayer.entity.ClienteEntity;
 import persistanceLayer.entity.ReservaEntity;
-import persistanceLayer.entity.Transporte;
+import persistanceLayer.entity.TransporteEntity;
 import persistanceLayer.entity.ViajeEntity;
 
 @Mapper(componentModel = "spring")
 public interface mapper {
 
-	ViajeDTO toDto(ViajeEntity entity);
+	ViajeDTO viajeToDto(ViajeEntity entity);
 
 	@Mapping(target = "fechasDisponibles", ignore = true)
 	@Mapping(target = "reservas", ignore = true)
 	@Mapping(target = "transportes", ignore = true)
-	ViajeEntity toEntity(ViajeDTO dto);
+	ViajeEntity viajeToEntity(ViajeDTO dto);
 
 	@Mapping(target = "idViaje", source = "viaje.idViaje")
 	@Mapping(target = "idCliente", source = "cliente.idCliente")
-	ReservaDTO toDto(ReservaEntity entity);
+	ReservaDTO reservaToDto(ReservaEntity entity);
 
 	@Mapping(target = "fecha", ignore = true)
 	@Mapping(target = "viaje", ignore = true)
 	@Mapping(target = "cliente", ignore = true)
-	ReservaEntity toEntity(ReservaDTO dto);
+	ReservaEntity reservaToEntity(ReservaDTO dto);
 
-	ClienteDTO toDto(ClienteEntity entity);
+	ClienteDTO clienteToDto(ClienteEntity entity);
 
 	@Mapping(target = "reservas", ignore = true)
-	ClienteEntity toEntity(ClienteDTO dto);
+	ClienteEntity clienteToEntity(ClienteDTO dto);
 
 	@Mapping(target = "idViaje", source = "viaje.idViaje")
-	TransporteDTO toDto(TransporteEntity entity);
+	TransporteDTO transporteToDto(TransporteEntity entity);
 
 	@Mapping(target = "viaje", ignore = true)
-	TransporteEntity toEntity(TransporteDTO dto);
+	TransporteEntity transporteToEntity(TransporteDTO dto);
 }

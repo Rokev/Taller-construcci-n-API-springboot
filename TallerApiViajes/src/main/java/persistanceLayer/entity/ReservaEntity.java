@@ -2,14 +2,17 @@ package persistanceLayer.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 
-import java.Time.LocalDateTime;
+import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "reserva")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ReservaEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

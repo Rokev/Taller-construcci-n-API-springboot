@@ -18,18 +18,18 @@ public class ViajeDAO {
     private final mapper mapper;
 
     public ViajeDTO save(ViajeDTO dto) {
-        ViajeEntity entity = mapper.toEntity(dto);
+        ViajeEntity entity = mapper.viajeToEntity(dto);
         entity.setIdViaje(null);
         ViajeEntity guardado = viajeRepository.save(entity);
-        return mapper.toDto(guardado);
+        return mapper.viajeToDto(guardado);
     }
 
     public Optional<ViajeDTO> findById(Long id) {
-        return viajeRepository.findById(id).map(mapper::toDto);
+        return viajeRepository.findById(id).map(mapper::viajeToDto);
     }
 
     public List<ViajeDTO> findAll() {
-        return viajeRepository.findAll().stream().map(mapper::toDto).toList();
+        return viajeRepository.findAll().stream().map(mapper::viajeToDto).toList();
     }
 
     public Optional<ViajeDTO> update(Long id, ViajeDTO dto) {
@@ -39,7 +39,7 @@ public class ViajeDAO {
             existente.setPrecio(dto.getPrecio());
             existente.setFechasDisponibles(dto.getFechasDisponibles());
             existente.setDescripcion(dto.getDescripcion());
-            return mapper.toDto(viajeRepository.save(existente));
+            return mapper.viajeToDto(viajeRepository.save(existente));
         });
     }
 

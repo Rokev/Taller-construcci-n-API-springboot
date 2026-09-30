@@ -1,8 +1,6 @@
 package BussisnesCatLayer.service.impl;
 
 import BussisnesCatLayer.dto.TransporteDTO;
-import BussisnesCatLayer.exception.BusinessValidationException;
-import BussisnesCatLayer.exception.ResourceNotFoundException;
 import BussisnesCatLayer.service.TransporteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +33,9 @@ public class TransporteServiceImpl implements TransporteService {
 
     @Override
     @Transactional(readOnly = true)
-    public TransporteDTO obtenerTransportePorId(Long id) {
+    public TransporteDTO obtenerTransportePorId(Long id) throws Exception {
         return transporteDAO.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Transporte no encontrado con ID: " + id));
+                .orElseThrow(() -> new Exception("Transporte no encontrado con ID: " + id));
     }
 
     @Override
@@ -47,22 +45,26 @@ public class TransporteServiceImpl implements TransporteService {
     }
 
     @Override
-    public TransporteDTO actualizarTransporte(Long id, TransporteDTO transporteDTO) {
-        if (!transporteDAO.existsById(id)) {
-            throw new ResourceNotFoundException("Transporte no encontrado con ID: " + id);
+    public TransporteDTO actualizarTransporte(Long id, TransporteDTO transporteDTO) throws Exception {
+        if (transporteDAO.findById(id)==null) {
+            try {
+                throw new Exception("Transporte no encontrado con ID: " + id);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         validarViajeExiste(transporteDTO.getIdViaje());
 
         TransporteDTO actualizado = transporteDAO.update(id, transporteDTO)
-                .orElseThrow(() -> new ResourceNotFoundException("Transporte no encontrado con ID: " + id));
+                .orElseThrow(() -> new Exception("Transporte no encontrado con ID: " + id));
         log.info("Transporte actualizado ID: {}", id);
         return actualizado;
     }
 
     @Override
-    public void eliminarTransporte(Long id) {
+    public void eliminarTransporte(Long id) throws Exception {
         if (!transporteDAO.deleteById(id)) {
-            throw new ResourceNotFoundException("Transporte no encontrado con ID: " + id);
+            throw new Exception("Transporte no encontrado con ID: " + id);
         }
         log.info("Transporte eliminado ID: {}", id);
     }

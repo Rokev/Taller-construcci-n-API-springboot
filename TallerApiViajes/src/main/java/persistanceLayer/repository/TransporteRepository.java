@@ -2,12 +2,12 @@ package persistanceLayer.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import persistanceLayer.entity.Transporte;
+import persistanceLayer.entity.TransporteEntity;
 
 import java.util.List;
 
 @Repository
-public interface TransporteRepository extends JpaRepository<Transporte, Long> {
+public interface TransporteRepository extends JpaRepository<TransporteEntity, Long> {
 
-	List<Transporte> findByViajeIdViaje(Long idViaje);
+	List<TransporteEntity> findByViajeIdViaje(Long idViaje);
 }
