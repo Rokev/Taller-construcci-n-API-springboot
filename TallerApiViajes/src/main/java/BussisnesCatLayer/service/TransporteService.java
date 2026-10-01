@@ -11,11 +11,11 @@ public interface TransporteService {
 
     TransporteDTO crearTransporte(TransporteDTO transporteDTO);
 
-    TransporteDTO obtenerTransportePorId(Long id) throws Exception;
+    TransporteDTO obtenerTransportePorId(Long id);
 
     List<TransporteDTO> obtenerTodosLosTransportes();
 
-    TransporteDTO actualizarTransporte(Long id, TransporteDTO transporteDTO) throws Exception;
+    TransporteDTO actualizarTransporte(Long id, TransporteDTO transporteDTO);
 
-    void eliminarTransporte(Long id) throws Exception;
+    void eliminarTransporte(Long id);
 }

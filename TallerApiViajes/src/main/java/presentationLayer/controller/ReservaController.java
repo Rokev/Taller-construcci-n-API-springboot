@@ -4,6 +4,7 @@ import BussisnesCatLayer.dto.ReservaDTO;
 import BussisnesCatLayer.service.ReservaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import presentationLayer.advice.ApiError;
 
 import java.util.List;
 
@@ -42,8 +44,10 @@ public class ReservaController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Reserva creada exitosamente",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReservaDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Datos invalidos, viaje/cliente inexistente, fecha o estado invalido",),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor",)
+            @ApiResponse(responseCode = "400", description = "Datos invalidos, viaje/cliente inexistente, fecha o estado invalido",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
     })
     public ResponseEntity<ReservaDTO> crearReserva(
             @Parameter(description = "Datos de la reserva a crear", required = true)
@@ -72,7 +76,7 @@ public class ReservaController {
     @GetMapping
     @Operation(summary = "Listar todas las reservas", description = "Obtiene la lista completa de reservas registradas")
     @ApiResponse(responseCode = "200", description = "Lista de reservas obtenida exitosamente",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReservaDTO.class)))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ReservaDTO.class))))
     public ResponseEntity<List<ReservaDTO>> obtenerTodas() {
         log.debug("GET /api/v1/reservas");
         return ResponseEntity.ok(reservaService.obtenerTodasLasReservas());

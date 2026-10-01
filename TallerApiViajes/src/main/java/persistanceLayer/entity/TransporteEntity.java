@@ -3,6 +3,7 @@ package persistanceLayer.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "transporte")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class TransporteEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +27,7 @@ public class TransporteEntity {
     @Column(name = "clase_servicio")
     private String claseServicio;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_viaje")
     private ViajeEntity viaje;
 

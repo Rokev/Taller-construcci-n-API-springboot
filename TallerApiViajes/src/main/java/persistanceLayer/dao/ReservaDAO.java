@@ -49,6 +49,10 @@ public class ReservaDAO {
         });
     }
 
+    public boolean existsById(Long id) {
+        return reservaRepository.existsById(id);
+    }
+
     public boolean deleteById(Long id) {
         if (reservaRepository.existsById(id)) {
             reservaRepository.deleteById(id);

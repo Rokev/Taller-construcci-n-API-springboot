@@ -20,9 +20,9 @@ public class ReservaEntity{
     private Long idReserva;
 
     private LocalDateTime fecha;
-    
+
     private String estado;
-    
+
     @Column(name="numero_personas")
     private int numeroPersonas;
 

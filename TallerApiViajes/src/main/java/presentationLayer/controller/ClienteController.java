@@ -4,6 +4,7 @@ import BussisnesCatLayer.dto.ClienteDTO;
 import BussisnesCatLayer.service.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import presentationLayer.advice.ApiError;
+
 import java.util.List;
 
 @RestController
@@ -40,14 +43,14 @@ public class ClienteController {
             @ApiResponse(responseCode = "201", description = "Cliente creado exitosamente",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDTO.class))),
             @ApiResponse(responseCode = "400", description = "Datos invalidos, faltantes o email ya registrado",
-                    content = @Content(mediaType = "application/json")),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor",
-                    content = @Content(mediaType = "application/json"))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
     })
     public ResponseEntity<ClienteDTO> crearCliente(
             @Parameter(description = "Datos del cliente a crear", required = true)
             @Valid @RequestBody ClienteDTO clienteDTO) {
-        //log.info("POST /api/v1/clientes - email: {}", clienteDTO.getEmail());
+        log.info("POST /api/v1/clientes - email: {}", clienteDTO.getEmail());
         ClienteDTO creado = clienteService.crearCliente(clienteDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
@@ -58,21 +61,21 @@ public class ClienteController {
             @ApiResponse(responseCode = "200", description = "Cliente encontrado",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDTO.class))),
             @ApiResponse(responseCode = "404", description = "Cliente no encontrado",
-                    content = @Content(mediaType = "application/json"))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
     })
     public ResponseEntity<ClienteDTO> obtenerPorId(
             @Parameter(description = "ID del cliente", required = true, example = "1")
             @PathVariable Long id) {
-        //log.debug("GET /api/v1/clientes/{}", id);
+        log.debug("GET /api/v1/clientes/{}", id);
         return ResponseEntity.ok(clienteService.obtenerClientePorId(id));
     }
 
     @GetMapping
     @Operation(summary = "Listar todos los clientes", description = "Obtiene la lista completa de clientes registrados")
     @ApiResponse(responseCode = "200", description = "Lista de clientes obtenida exitosamente",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDTO.class)))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ClienteDTO.class))))
     public ResponseEntity<List<ClienteDTO>> obtenerTodos() {
-        //log.debug("GET /api/v1/clientes");
+        log.debug("GET /api/v1/clientes");
         return ResponseEntity.ok(clienteService.obtenerTodosLosClientes());
     }
 
@@ -82,15 +85,16 @@ public class ClienteController {
             @ApiResponse(responseCode = "200", description = "Cliente actualizado exitosamente",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDTO.class))),
             @ApiResponse(responseCode = "400", description = "Datos invalidos o email ya registrado por otro cliente",
-                    content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "Cliente no encontrado")
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class))),
+            @ApiResponse(responseCode = "404", description = "Cliente no encontrado",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
     })
     public ResponseEntity<ClienteDTO> actualizar(
             @Parameter(description = "ID del cliente a actualizar", required = true, example = "1")
             @PathVariable Long id,
             @Parameter(description = "Nuevos datos del cliente", required = true)
             @Valid @RequestBody ClienteDTO clienteDTO) {
-        //log.info("PUT /api/v1/clientes/{}", id);
+        log.info("PUT /api/v1/clientes/{}", id);
         return ResponseEntity.ok(clienteService.actualizarCliente(id, clienteDTO));
     }
 
@@ -98,12 +102,13 @@ public class ClienteController {
     @Operation(summary = "Eliminar cliente", description = "Elimina un cliente del sistema")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Cliente eliminado exitosamente"),
-            @ApiResponse(responseCode = "404", description = "Cliente no encontrado")
+            @ApiResponse(responseCode = "404", description = "Cliente no encontrado",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
     })
     public ResponseEntity<Void> eliminar(
             @Parameter(description = "ID del cliente a eliminar", required = true, example = "1")
             @PathVariable Long id) {
-        //log.info("DELETE /api/v1/clientes/{}", id);
+        log.info("DELETE /api/v1/clientes/{}", id);
         clienteService.eliminarCliente(id);
         return ResponseEntity.noContent().build();
     }

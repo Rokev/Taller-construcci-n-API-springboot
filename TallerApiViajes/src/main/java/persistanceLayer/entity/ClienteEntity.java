@@ -3,7 +3,9 @@ package persistanceLayer.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -25,6 +27,8 @@ public class ClienteEntity{
 
     private String direccion;
 
-    @OneToMany(mappedBy = "ClienteEntity", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<ReservaEntity> reservas;
 }

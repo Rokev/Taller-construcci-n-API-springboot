@@ -4,6 +4,7 @@ import BussisnesCatLayer.dto.TransporteDTO;
 import BussisnesCatLayer.service.TransporteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -71,7 +72,7 @@ public class TransporteController {
     @GetMapping
     @Operation(summary = "Listar todos los transportes", description = "Obtiene la lista completa de transportes registrados")
     @ApiResponse(responseCode = "200", description = "Lista de transportes obtenida exitosamente",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransporteDTO.class)))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TransporteDTO.class))))
     public ResponseEntity<List<TransporteDTO>> obtenerTodos() {
         log.debug("GET /api/v1/transportes");
         return ResponseEntity.ok(transporteService.obtenerTodosLosTransportes());

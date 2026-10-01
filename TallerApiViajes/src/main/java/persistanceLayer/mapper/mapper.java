@@ -15,7 +15,6 @@ public interface mapper {
 
 	ViajeDTO viajeToDto(ViajeEntity entity);
 
-	@Mapping(target = "fechasDisponibles", ignore = true)
 	@Mapping(target = "reservas", ignore = true)
 	@Mapping(target = "transportes", ignore = true)
 	ViajeEntity viajeToEntity(ViajeDTO dto);
@@ -24,7 +23,6 @@ public interface mapper {
 	@Mapping(target = "idCliente", source = "cliente.idCliente")
 	ReservaDTO reservaToDto(ReservaEntity entity);
 
-	@Mapping(target = "fecha", ignore = true)
 	@Mapping(target = "viaje", ignore = true)
 	@Mapping(target = "cliente", ignore = true)
 	ReservaEntity reservaToEntity(ReservaDTO dto);

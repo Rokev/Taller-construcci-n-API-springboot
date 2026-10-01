@@ -1,6 +1,8 @@
 package BussisnesCatLayer.service.impl;
 
 import BussisnesCatLayer.dto.ReservaDTO;
+import BussisnesCatLayer.exception.BusinessValidationException;
+import BussisnesCatLayer.exception.ResourceNotFoundException;
 import BussisnesCatLayer.service.ReservaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +45,9 @@ public class ReservaServiceImpl implements ReservaService {
 
     @Override
     @Transactional(readOnly = true)
-    public ReservaDTO obtenerReservaPorId(Long id) throws Exception {
+    public ReservaDTO obtenerReservaPorId(Long id) {
         return reservaDAO.findById(id)
-                .orElseThrow(() -> new Exception("Reserva no encontrada con ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada con ID: " + id));
     }
 
     @Override
@@ -55,9 +57,9 @@ public class ReservaServiceImpl implements ReservaService {
     }
 
     @Override
-    public ReservaDTO actualizarReserva(Long id, ReservaDTO reservaDTO) throws Exception {
-        if (reservaDAO.findById(id)== null) {
-            new Exception("Reserva no encontrada con ID: " + id);
+    public ReservaDTO actualizarReserva(Long id, ReservaDTO reservaDTO) {
+        if (!reservaDAO.existsById(id)) {
+            throw new ResourceNotFoundException("Reserva no encontrada con ID: " + id);
         }
         validarViajeExiste(reservaDTO.getIdViaje());
         validarClienteExiste(reservaDTO.getIdCliente());
@@ -65,7 +67,7 @@ public class ReservaServiceImpl implements ReservaService {
         validarEstado(reservaDTO.getEstado());
 
         ReservaDTO actualizada = reservaDAO.update(id, reservaDTO)
-                .orElseThrow(() -> new Exception("Reserva no encontrada con ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada con ID: " + id));
         log.info("Reserva actualizada ID: {}", id);
         return actualizada;
     }
@@ -73,62 +75,38 @@ public class ReservaServiceImpl implements ReservaService {
     @Override
     public void eliminarReserva(Long id) {
         if (!reservaDAO.deleteById(id)) {
-            try {
-                throw new Exception("Reserva no encontrada con ID: " + id);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            throw new ResourceNotFoundException("Reserva no encontrada con ID: " + id);
         }
         log.info("Reserva eliminada ID: {}", id);
     }
 
     private void validarViajeExiste(Long idViaje) {
-        if (!viajeDAO.existsById(idViaje)) {
-            try {
-                throw new Exception(
-                        "No se puede reservar: el viaje con ID " + idViaje + " no existe");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+        if (idViaje == null || !viajeDAO.existsById(idViaje)) {
+            throw new BusinessValidationException(
+                    "No se puede reservar: el viaje con ID " + idViaje + " no existe");
         }
     }
 
     private void validarClienteExiste(Long idCliente) {
-        if (!clienteDAO.existsById(idCliente)) {
-            try {
-                throw new Exception(
-                        "No se puede reservar: el cliente con ID " + idCliente + " no existe");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+        if (idCliente == null || !clienteDAO.existsById(idCliente)) {
+            throw new BusinessValidationException(
+                    "No se puede reservar: el cliente con ID " + idCliente + " no existe");
         }
     }
 
     private void validarFecha(LocalDateTime fecha) {
         if (fecha == null) {
-            try {
-                throw new Exception("La fecha de la reserva es obligatoria");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            throw new BusinessValidationException("La fecha de la reserva es obligatoria");
         }
         if (fecha.isBefore(LocalDateTime.now())) {
-            try {
-                throw new Exception("La fecha de la reserva no puede ser en el pasado");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            throw new BusinessValidationException("La fecha de la reserva no puede ser en el pasado");
         }
     }
 
     private void validarEstado(String estado) {
         if (estado == null || !ESTADOS_VALIDOS.contains(estado.toUpperCase())) {
-            try {
-                throw new Exception(
-                        "El estado de la reserva debe ser uno de: " + ESTADOS_VALIDOS);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            throw new BusinessValidationException(
+                    "El estado de la reserva debe ser uno de: " + ESTADOS_VALIDOS);
         }
     }
 }

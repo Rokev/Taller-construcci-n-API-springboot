@@ -4,6 +4,7 @@ import BussisnesCatLayer.dto.ViajeDTO;
 import BussisnesCatLayer.service.ViajeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -71,7 +72,7 @@ public class ViajeController {
     @GetMapping
     @Operation(summary = "Listar todos los viajes", description = "Obtiene la lista completa de viajes registrados")
     @ApiResponse(responseCode = "200", description = "Lista de viajes obtenida exitosamente",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ViajeDTO.class)))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ViajeDTO.class))))
     public ResponseEntity<List<ViajeDTO>> obtenerTodos() {
         log.debug("GET /api/v1/viajes");
         return ResponseEntity.ok(viajeService.obtenerTodosLosViajes());

@@ -2,7 +2,7 @@ package persistanceLayer.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-impor persistanceLayer.entity.ClienteEntity;
+import persistanceLayer.entity.ClienteEntity;
 
 import java.util.Optional;
 

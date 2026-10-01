@@ -2,7 +2,9 @@ package persistanceLayer.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -26,9 +28,13 @@ public class ViajeEntity{
     private LocalDateTime fechasDisponibles;
     private String descripcion;
 
-    @OneToMany(mappedBy = "ViajeEntity", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "viaje", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<ReservaEntity> reservas;
 
-    @OneToMany(mappedBy = "ViajeEntity", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "viaje", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<TransporteEntity> transportes;
-}        
+}
